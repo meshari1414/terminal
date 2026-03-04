@@ -1,0 +1,457 @@
+﻿<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سجل الأرشيف</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1E3A8A;
+      --danger: #DC2626;
+      --bg-color: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #1F2937;
+      --text-light: #6B7280;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding: 18px 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 8px;
+    }
+
+    .top h1 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-back {
+      background: #e2e8f0;
+      color: #1f2937;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .archive-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .archive-item {
+      background: var(--card-bg);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+      overflow: hidden;
+    }
+
+    .archive-summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e5e7eb;
+      user-select: none;
+    }
+
+    .archive-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .summary-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .summary-chevron {
+      font-size: 1rem;
+      color: var(--text-light);
+      transition: transform 0.2s ease;
+    }
+
+    details[open] .summary-chevron {
+      transform: rotate(180deg);
+    }
+
+    .archive-body {
+      padding: 12px;
+    }
+
+    .meta-date {
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .meta-counts {
+      color: var(--text-light);
+      font-weight: 700;
+      font-size: 0.95rem;
+      background: #eef2ff;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      padding: 4px 9px;
+    }
+
+    .members-list {
+      margin: 0 0 10px 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .members-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #e5e7eb;
+      border-radius: 9px;
+      padding: 7px 9px;
+      background: #f8fafc;
+      font-weight: 700;
+    }
+
+    .members-paid {
+      color: var(--primary);
+    }
+
+    .section-title {
+      margin: 8px 0 6px;
+      font-size: 0.92rem;
+      color: var(--text-light);
+      font-weight: 800;
+    }
+
+    .expenses-list {
+      margin: 0 0 10px 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .expense-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #e5e7eb;
+      border-radius: 9px;
+      padding: 7px 9px;
+      background: #fff;
+      font-weight: 700;
+    }
+
+    .expense-amount {
+      color: #b91c1c;
+    }
+
+    .archive-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .btn-restore {
+      background: #0f172a;
+      color: #fff;
+    }
+
+    .btn-restore:hover {
+      opacity: 0.92;
+    }
+
+    .btn-delete {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .btn-delete:hover {
+      background: #fecaca;
+    }
+
+    @media (max-width: 480px) {
+      .archive-summary {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .summary-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .archive-actions .btn {
+        flex: 1;
+      }
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--text-light);
+      background: #fff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 18px;
+      font-weight: 700;
+    }
+
+    .msg {
+      margin-bottom: 10px;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .msg.success { background: #dcfce7; color: #166534; display: block; }
+    .msg.error { background: #fee2e2; color: #991b1b; display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top">
+      <h1>سجل الأرشيف</h1>
+      <a class="btn btn-back" href="terminal.html">الرجوع</a>
+    </div>
+
+    <div id="message" class="msg"></div>
+    <div id="archiveList" class="archive-list"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'terminalDataV1';
+
+    function createDefaultStore() {
+      return {
+        members: [],
+        expenses: [],
+        archives: []
+      };
+    }
+
+    function readStore() {
+      try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return createDefaultStore();
+        const parsed = JSON.parse(raw);
+        return {
+          members: Array.isArray(parsed.members) ? parsed.members : [],
+          expenses: Array.isArray(parsed.expenses) ? parsed.expenses : [],
+          archives: Array.isArray(parsed.archives) ? parsed.archives : []
+        };
+      } catch (_) {
+        return createDefaultStore();
+      }
+    }
+
+    function writeStore(store) {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('ar-SA', {
+        numberingSystem: 'latn',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function formatAmount(value) {
+      const number = Number(value) || 0;
+      return number.toLocaleString('ar-SA', {
+        numberingSystem: 'latn',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function sumMembersPaid(members) {
+      if (!Array.isArray(members)) return 0;
+      return members.reduce((sum, member) => sum + (Number(member?.paid) || 0), 0);
+    }
+
+    function sumExpensesAmount(expenses) {
+      if (!Array.isArray(expenses)) return 0;
+      return expenses.reduce((sum, expense) => sum + (Number(expense?.amount) || 0), 0);
+    }
+
+    function showMessage(text, type) {
+      const el = document.getElementById('message');
+      el.className = 'msg ' + type;
+      el.textContent = text;
+    }
+
+    function renderMembers(members) {
+      if (!members.length) {
+        return '<div class="empty" style="padding:10px">لا يوجد أعضاء في هذا الأرشيف.</div>';
+      }
+
+      const items = members
+        .map((member) => {
+          return (
+            '<li class="members-item">' +
+            '<span>' + escapeHtml(member.name) + '</span>' +
+            '<span class="members-paid">' + formatAmount(Number(member.paid) || 0) + ' ريال</span>' +
+            '</li>'
+          );
+        })
+        .join('');
+
+      return '<ul class="members-list">' + items + '</ul>';
+    }
+
+    function renderExpenses(expenses) {
+      if (!expenses.length) {
+        return '<div class="empty" style="padding:10px">لا توجد مصروفات في هذا الأرشيف.</div>';
+      }
+
+      const items = expenses
+        .map((expense) => {
+          const text = expense && (expense.desc || expense.description) ? (expense.desc || expense.description) : '';
+          return (
+            '<li class="expense-item">' +
+            '<span>' + escapeHtml(text) + '</span>' +
+            '<span class="expense-amount">' + formatAmount(Number(expense.amount) || 0) + ' ريال</span>' +
+            '</li>'
+          );
+        })
+        .join('');
+
+      return '<ul class="expenses-list">' + items + '</ul>';
+    }
+
+    async function loadArchives() {
+      const list = document.getElementById('archiveList');
+      try {
+        const store = readStore();
+        const archives = Array.isArray(store.archives) ? store.archives : [];
+
+        if (!archives.length) {
+          list.innerHTML = '<div class="empty">لا يوجد أرشيفات بعد.</div>';
+          return;
+        }
+
+        list.innerHTML = '';
+        const ordered = [...archives].sort((a, b) => Number(b.id) - Number(a.id));
+        ordered.forEach((archive) => {
+          const members = Array.isArray(archive.members) ? archive.members : [];
+          const expenses = Array.isArray(archive.expenses) ? archive.expenses : [];
+          const totalPaid = formatAmount(sumMembersPaid(members));
+          const totalExpenses = formatAmount(sumExpensesAmount(expenses));
+          const item = document.createElement('details');
+          item.className = 'archive-item';
+          item.open = false;
+          item.innerHTML =
+            '<summary class="archive-summary">' +
+              '<div class="meta-date">' + formatDate(archive.archivedAt) + '</div>' +
+              '<div class="summary-right">' +
+                '<div class="meta-counts">المدفوع: ' + totalPaid + ' ريال | المصروفات: ' + totalExpenses + ' ريال</div>' +
+                '<span class="summary-chevron">⌄</span>' +
+              '</div>' +
+            '</summary>' +
+            '<div class="archive-body">' +
+              '<div class="section-title">الأعضاء</div>' +
+              renderMembers(members) +
+              '<div class="section-title">مصروفات الاستراحة</div>' +
+              renderExpenses(expenses) +
+              '<div class="archive-actions">' +
+                '<button class="btn btn-restore" onclick="restoreArchive(' + archive.id + ')">استرجاع</button>' +
+                '<button class="btn btn-delete" onclick="deleteArchive(' + archive.id + ')">حذف</button>' +
+              '</div>' +
+            '</div>';
+          list.appendChild(item);
+        });
+      } catch (_) {
+        showMessage('تعذر تحميل الأرشيفات', 'error');
+      }
+    }
+
+    async function restoreArchive(id) {
+      try {
+        const store = readStore();
+        const archive = store.archives.find((a) => Number(a.id) === Number(id));
+        if (!archive) throw new Error('archive not found');
+
+        store.members = (archive.members || []).map((m, idx) => ({
+          id: idx + 1,
+          name: String(m.name || '').trim(),
+          paid: Number(m.paid) || 0
+        })).filter((m) => m.name);
+
+        store.expenses = (archive.expenses || []).map((e, idx) => ({
+          id: idx + 1,
+          desc: String(e.desc || e.description || '').trim(),
+          amount: Number(e.amount) || 0,
+          createdAt: new Date().toISOString()
+        })).filter((e) => e.desc && e.amount > 0);
+
+        writeStore(store);
+        showMessage('تم الاسترجاع بنجاح. يمكنك الرجوع للصفحة الرئيسية.', 'success');
+      } catch (_) {
+        showMessage('تعذر الاسترجاع', 'error');
+      }
+    }
+
+    async function deleteArchive(id) {
+      try {
+        const store = readStore();
+        store.archives = (store.archives || []).filter((a) => Number(a.id) !== Number(id));
+        writeStore(store);
+        showMessage('تم حذف الأرشيف.', 'success');
+        await loadArchives();
+      } catch (_) {
+        showMessage('تعذر حذف الأرشيف', 'error');
+      }
+    }
+
+    window.onload = loadArchives;
+  </script>
+</body>
+</html>

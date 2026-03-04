@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: break-box-app
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: DB_PATH
+        value: /var/data/terminal.db
+    disk:
+      name: break-box-data
+      mountPath: /var/data
+      sizeGB: 1

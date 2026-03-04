@@ -1,0 +1,357 @@
+﻿<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ميزانية الاستراحة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1E3A8A; /* اللون الكحلي الأساسي */
+            --secondary: #10B981;
+            --danger: #DC2626; 
+            --bg-color: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-light: #6B7280;
+            --shadow-lg: 0 20px 45px rgba(15, 23, 42, 0.12);
+            --shadow-sm: 0 8px 20px rgba(15, 23, 42, 0.08);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, #dbeafe 0%, transparent 40%),
+                radial-gradient(circle at 90% 20%, #e2e8f0 0%, transparent 45%),
+                var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container { width: 100%; max-width: 470px; }
+
+        .summary-card {
+            background: #233c81; 
+            color: #FFFFFF;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .summary-card h1 {
+            margin: 0 0 20px 0;
+            font-size: 1.4rem;
+            color: #FFFFFF; 
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            grid-template-areas:
+                "balance balance"
+                "collected spent";
+        }
+
+        .stat-box {
+            background: #FFFFFF; 
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid #E2E8F0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08);
+        }
+        
+        .stat-box:nth-child(1) { grid-area: collected; }
+        .stat-box:nth-child(2) { grid-area: spent; }
+
+        .stat-box.full-width {
+            grid-area: balance;
+            background: #EFF6FF; 
+            border: 1px solid rgba(30, 58, 138, 0.15); 
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary); /* توحيد لون جميع العناوين للكحلي */
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .balance-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #E2E8F0;
+        }
+
+        .card h2 {
+            margin-top: 0; font-size: 1.2rem; font-weight: 700; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;
+        }
+
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        input {
+            flex: 1; padding: 12px; border: 1px solid #D1D5DB; border-radius: 10px;
+            font-family: inherit; font-size: 0.95rem; font-weight: 500; outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+        }
+
+        button.btn-add {
+            background-color: var(--primary); 
+            color: white; border: none; padding: 12px;
+            border-radius: 10px; font-weight: 700; font-size: 1.05rem; cursor: pointer; width: 100%;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        button.btn-add:hover { opacity: 0.9; transform: translateY(-1px);}
+
+        .btn-delete {
+            background: #FEE2E2; border: none; color: var(--danger); cursor: pointer; font-family: inherit;
+            font-size: 0.95rem; font-weight: 700; padding: 6px 10px; border-radius: 8px; transition: 0.2s;
+        }
+        .btn-delete:hover { background: #FCA5A5; }
+
+        ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+        li {
+            padding: 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            background: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+        li:last-child { border-bottom: 1px solid #E5E7EB; }
+
+        .member-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .member-info { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem;}
+        
+        .member-actions { display: flex; align-items: center; gap: 10px; }
+        .paid-input-group { display: flex; align-items: center; gap: 8px; background: #f9fafb; padding: 6px 10px; border-radius: 10px; border: 1px solid #e5e7eb;}
+        .paid-input-group label { font-size: 0.9rem; font-weight: 700; color: var(--text-light); }
+        .paid-input-group input {
+            width: 70px; padding: 6px; text-align: center; font-weight: 800; font-size: 1rem; color: var(--primary); background: transparent; border: none;
+        }
+
+        .expense-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .expense-info { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .expense-desc { font-weight: 700; font-size: 1.05rem;}
+        .expense-price { color: var(--danger); font-weight: 800; font-size: 1.05rem;}
+        .empty-state { text-align: center; color: var(--text-light); font-size: 1rem; font-weight: 500; }
+        .svg-icon { display: inline-flex; width: 18px; height: 18px; color: var(--primary); }
+        .svg-icon svg { width: 18px; height: 18px; display: block; }
+
+        .top-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+            background: #ffffff;
+            border: 1px solid #dbe3f2;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .archive-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .archive-label {
+            color: var(--text-light);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .archive-value {
+            color: var(--primary);
+            font-size: 0.96rem;
+            font-weight: 800;
+        }
+
+        .btn-archive {
+            border: none;
+            background: #0f172a;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-archive:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .archive-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-history {
+            border: none;
+            background: #e2e8f0;
+            color: #1f2937;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-delete {
+            min-width: 62px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.18);
+        }
+
+        .btn-delete:active,
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
+        .toast-container {
+            position: fixed;
+            left: 16px;
+            bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: #0f172a;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            box-shadow: var(--shadow-sm);
+            animation: toastIn 0.25s ease;
+            max-width: 320px;
+        }
+
+        .toast.error { background: #991b1b; }
+        .toast.success { background: #065f46; }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 14px 8px; }
+            .summary-card { padding: 18px; border-radius: 18px; }
+            .card { padding: 16px; }
+            .member-item, .expense-item { align-items: flex-start; gap: 8px; }
+            .member-actions { flex-wrap: wrap; justify-content: flex-end; }
+            .top-meta { flex-direction: column; align-items: stretch; }
+            .btn-archive { width: 100%; }
+            .archive-actions { width: 100%; }
+            .btn-history { flex: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="top-meta">
+            <div class="archive-meta">
+                <div class="archive-label">آخر أرشفة</div>
+                <div class="archive-value" id="lastArchiveDisplay">لا توجد أرشفة</div>
+            </div>
+            <div class="archive-actions">
+                <a class="btn-history" href="archive.html">سجل الأرشيف</a>
+                <button class="btn-archive" onclick="archiveAllData()">أرشفة</button>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <h1>📦 صندوق الاستراحة</h1>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-label">💰 إجمالي المجمّع</span>
+                    <span class="stat-value" id="totalCollectedDisplay" style="color: var(--primary);">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">💸 إجمالي المصروفات</span>
+                    <span class="stat-value" id="totalExpensesDisplay" style="color: var(--primary);">0</span>
+                </div>
+                <div class="stat-box full-width">
+                    <span class="stat-label">🧾 الرصيد المتبقي</span>
+                    <span class="stat-value balance-value" id="boxBalanceDisplay" dir="ltr" style="color: var(--primary);">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💸 مصروفات الاستراحة</h2>
+            <div class="input-group">
+                <input type="text" id="expenseDesc" placeholder="وش شريتوا؟" style="flex: 2;">
+                <input type="number" id="expenseAmount" placeholder="المبلغ" style="flex: 1;">
+            </div>
+            <button class="btn-add" onclick="addExpense()">تسجيل مصروف</button>
+            <ul id="expensesList"></ul>
+        </div>
+
+        <div class="card">
+            <h2>👥 الشباب (<span id="membersCount">0</span>)</h2>
+            <div class="input-group">
+                <input type="text" id="newMember" placeholder="اكتب اسم العضو هنا...">
+            </div>
+            <button class="btn-add" onclick="addMember()">إضافة عضو</button>
+            <ul id="membersList"></ul>
+        </div>
+
+    </div>
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
